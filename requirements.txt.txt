@@ -1,0 +1,9 @@
+pandas
+sklearn
+xgboost
+Logistic Regression
+Decision Tree
+kNN
+Naive Bayes 
+Random Forest (Ensemble) 
+XGBoost (Ensemble) 
