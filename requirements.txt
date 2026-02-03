@@ -1,9 +1,8 @@
+streamlit
+scikit-learn
+numpy
 pandas
-sklearn
+matplotlib
+seaborn
 xgboost
-Logistic Regression
-Decision Tree
-kNN
-Naive Bayes 
-Random Forest (Ensemble) 
-XGBoost (Ensemble) 
+joblib
