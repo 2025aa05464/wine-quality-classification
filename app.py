@@ -2,47 +2,59 @@ import streamlit as st
 import pandas as pd
 import joblib
 from sklearn.metrics import (
-    accuracy_score, precision_score, recall_score,
-    f1_score, matthews_corrcoef, confusion_matrix
+    accuracy_score,
+    precision_score,
+    recall_score,
+    f1_score,
+    matthews_corrcoef,
+    confusion_matrix
 )
+import seaborn as sns
+import matplotlib.pyplot as plt
 
 # Title
-st.title("Wine Quality Classification App")
+st.title("Wine Quality Classification 🍷")
 
 # Upload CSV
-uploaded_file = st.file_uploader("Upload CSV file", type="csv")
+uploaded_file = st.file_uploader("Upload Wine Quality CSV", type="csv")
 
-# Model selection dropdown
-model_choice = st.selectbox(
-    "Choose a model",
-    ["Logistic Regression", "Decision Tree", "KNN", "Naive Bayes", "Random Forest", "XGBoost"]
-)
-
-# Run model when button is clicked
-if uploaded_file is not None and st.button("Run Model"):
+if uploaded_file is not None:
     # Load dataset
-    data = pd.read_csv(uploaded_file)
-    st.write("Uploaded Data Preview:", data.head())
+    df = pd.read_csv(uploaded_file, sep=";")
+    st.write("Dataset Preview:", df.head())
 
-    # Split into features and target
-    X = data.iloc[:, :-1]
-    y = data.iloc[:, -1]
+    # Features and target
+    X = df.drop("quality", axis=1)
+    y = df["quality"]
 
-    # Load chosen model
+    # Model selection dropdown
+    model_choice = st.selectbox(
+        "Choose a model",
+        ["Logistic Regression", "Decision Tree", "KNN", "Naive Bayes", "Random Forest", "XGBoost"]
+    )
+
+    # Load pipeline model
     model_path = f"model/{model_choice.lower().replace(' ', '_')}.pkl"
     model = joblib.load(model_path)
 
     # Predictions
     y_pred = model.predict(X)
 
-    # Metrics
-    st.write("### Evaluation Metrics")
-    st.write("Accuracy:", accuracy_score(y, y_pred))
-    st.write("Precision:", precision_score(y, y_pred, average="weighted"))
-    st.write("Recall:", recall_score(y, y_pred, average="weighted"))
-    st.write("F1:", f1_score(y, y_pred, average="weighted"))
-    st.write("MCC:", matthews_corrcoef(y, y_pred))
+    # Results
+    st.subheader("Predictions")
+    st.write(y_pred)
 
-    # Confusion Matrix
-    st.write("### Confusion Matrix")
-    st.write(confusion_matrix(y, y_pred))
+    # Evaluation metrics
+    st.subheader("Evaluation Metrics")
+    st.write(f"Accuracy: {accuracy_score(y, y_pred):.2f}")
+    st.write(f"Precision: {precision_score(y, y_pred, average='weighted'):.2f}")
+    st.write(f"Recall: {recall_score(y, y_pred, average='weighted'):.2f}")
+    st.write(f"F1 Score: {f1_score(y, y_pred, average='weighted'):.2f}")
+    st.write(f"MCC: {matthews_corrcoef(y, y_pred):.2f}")
+
+    # Confusion Matrix Heatmap
+    st.subheader("Confusion Matrix")
+    cm = confusion_matrix(y, y_pred)
+    fig, ax = plt.subplots()
+    sns.heatmap(cm, annot=True, fmt="d", cmap="Blues", ax=ax)
+    st.pyplot(fig)
