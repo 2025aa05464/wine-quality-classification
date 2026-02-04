@@ -37,6 +37,11 @@ if uploaded_file is not None:
     model_path = f"model/{model_choice.lower().replace(' ', '_')}.pkl"
     model = joblib.load(model_path)
 
+    X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42, stratify=y
+    )
+
+
     # Predictions
     y_pred = model.predict(X)
 
